@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>3D Roller Coaster Geometry</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div id="ui">
+    <h2>🎢 3D Roller Coaster</h2>
+
+    <label>Speed Control</label>
+    <input type="range" min="0.0005" max="0.005" step="0.0005" value="0.001" id="speed">
+
+    <button id="modeBtn">Switch to Free Mode</button>
+
+    <p><b>G-Force:</b> <span id="gforce">0</span> G</p>
+
+    <button id="factBtn">Show Geometry Fact</button>
+    <p id="fact"></p>
+
+    <p class="note">
+        • Spline-based geometry<br>
+        • Touch & mouse supported
+    </p>
+</div>
+
+<!-- Three.js -->
+<script src="https://cdn.jsdelivr.net/npm/three@0.152.2/build/three.min.js"></script>
+
+<!-- OrbitControls -->
+<script src="https://cdn.jsdelivr.net/npm/three@0.152.2/examples/js/controls/OrbitControls.js"></script>
+
+<script src="coaster.js"></script>
+<script src="main.js"></script>
+</body>
+</html>
