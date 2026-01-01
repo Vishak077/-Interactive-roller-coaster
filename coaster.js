@@ -20,10 +20,7 @@ const controls = new THREE.OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
 controls.enableZoom = true;
 controls.enablePan = false;
-controls.touches = {
-    ONE: THREE.TOUCH.ROTATE,
-    TWO: THREE.TOUCH.DOLLY_PAN
-};
+
 
 // Lights
 scene.add(new THREE.AmbientLight(0x404040));
