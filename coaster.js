@@ -1,6 +1,5 @@
 // Scene
 const scene = new THREE.Scene();
-scene.fog = new THREE.Fog(0x000000, 20, 300);
 
 // Camera
 const camera = new THREE.PerspectiveCamera(
@@ -15,18 +14,25 @@ const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
-// OrbitControls (mouse + touch)
+// OrbitControls (mouse + touch work by default)
 const controls = new THREE.OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
 controls.enableZoom = true;
 controls.enablePan = false;
 
+// Safe start position
+camera.position.set(0, 10, 25);
+controls.target.set(0, 0, 0);
+controls.update();
 
 // Lights
-scene.add(new THREE.AmbientLight(0x404040));
-const light = new THREE.PointLight(0xffffff, 1);
-light.position.set(20, 40, 20);
+scene.add(new THREE.AmbientLight(0xffffff, 0.6));
+const light = new THREE.DirectionalLight(0xffffff, 1);
+light.position.set(10, 20, 10);
 scene.add(light);
+
+// Debug helper
+scene.add(new THREE.AxesHelper(5));
 
 // Track curve
 const points = [];
@@ -39,36 +45,32 @@ for (let i = 0; i < 120; i++) {
 }
 const curve = new THREE.CatmullRomCurve3(points);
 
-// Track mesh
+// Track
 const track = new THREE.Mesh(
     new THREE.TubeGeometry(curve, 400, 0.5, 10, false),
-    new THREE.MeshStandardMaterial({
-        color: 0xff0000,
-        metalness: 0.6,
-        roughness: 0.3
-    })
+    new THREE.MeshStandardMaterial({ color: 0xff0000 })
 );
 scene.add(track);
 
-// Roller coaster cart
+// Cart
 const cart = new THREE.Mesh(
     new THREE.BoxGeometry(1.2, 0.6, 1),
     new THREE.MeshStandardMaterial({ color: 0x00ffcc })
 );
 scene.add(cart);
 
-// Motion variables
+// Motion
 let t = 0;
 let speed = 0.001;
 let rideMode = true;
 let previousTangent = new THREE.Vector3();
 
-// Toggle function (used by main.js)
+// Toggle (used by main.js)
 function toggleMode() {
     rideMode = !rideMode;
 }
 
-// Animation
+// Animate
 function animate() {
     requestAnimationFrame(animate);
 
@@ -76,22 +78,20 @@ function animate() {
         t += speed;
         if (t > 1) t = 0;
 
-        const position = curve.getPointAt(t);
-        const tangent = curve.getTangentAt(t).normalize();
+        const pos = curve.getPointAt(t);
+        const tan = curve.getTangentAt(t).normalize();
 
-        camera.position.copy(position);
-        camera.lookAt(position.clone().add(tangent));
+        camera.position.copy(pos.clone().add(new THREE.Vector3(0, 1, 0)));
+        camera.lookAt(pos.clone().add(tan));
 
-        cart.position.copy(position);
-        cart.lookAt(position.clone().add(tangent));
+        cart.position.copy(pos);
+        cart.lookAt(pos.clone().add(tan));
 
-        // G-force calculation
         if (previousTangent.length() > 0) {
-            const delta = tangent.clone().sub(previousTangent).length();
-            const g = (delta * 50).toFixed(2);
+            const g = (tan.clone().sub(previousTangent).length() * 50).toFixed(2);
             document.getElementById("gforce").innerText = g;
         }
-        previousTangent.copy(tangent);
+        previousTangent.copy(tan);
     }
 
     controls.update();
